@@ -1,11 +1,13 @@
 const int sensor = 8;
 const int relay = 7;
 const int debug = 13;
+const int pushButton = 6;
 
 int last = HIGH;
 boolean inside = false;
 unsigned long inside_time = 0;
-unsigned long max_inside_time = 35*100000;
+unsigned long max_inside_time = 18*100000;
+//unsigned long max_inside_time = 35*100000;
 boolean wait = false;
 unsigned long wait_time = 0;
 unsigned long max_wait_time = 100000;
@@ -19,6 +21,7 @@ void setup() {
   Serial.begin(9600);
   
   pinMode(sensor, INPUT_PULLUP);
+  pinMode(pushButton, INPUT_PULLUP);
   pinMode(relay, OUTPUT);
   pinMode(debug, OUTPUT);
   
@@ -78,6 +81,13 @@ void loop() {
       wait_time = 0;
     }
   }
+
+  if (digitalRead(pushButton) == 0) {
+    open();
+    while(digitalRead(pushButton) == 0){
+      //do nothing
+    }
+  }
   
   
   if (Serial.available() > 0) {
@@ -97,7 +107,7 @@ void loop() {
 
 void open() {
   Serial.write("o");
-  digitalWrite(relay, LOW);
+  digitalWrite(relay, HIGH);
   wait = true;
   inactive = true;
   inside = false;
@@ -105,7 +115,7 @@ void open() {
 }
 void openWOwait() {
   Serial.write("o");
-  digitalWrite(relay, LOW);
+  digitalWrite(relay, HIGH);
   wait = false;
   inactive = true;
   inside = false;
@@ -113,7 +123,7 @@ void openWOwait() {
 }
 void close() {
   Serial.write("c");
-  digitalWrite(relay, HIGH);
+  digitalWrite(relay, LOW);
   delay(30);
   inside = true;
 }
