@@ -6,7 +6,7 @@ const int pushButton = 6;
 int last = HIGH;
 boolean inside = false;
 unsigned long inside_time = 0;
-unsigned long max_inside_time = 18*100000;
+unsigned long max_inside_time = 15*100000;
 //unsigned long max_inside_time = 35*100000;
 boolean wait = false;
 unsigned long wait_time = 0;
@@ -18,11 +18,12 @@ unsigned long max_inactive_time = 10*100000;
 int incomingByte;
 
 void setup() { 
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   pinMode(sensor, INPUT_PULLUP);
   pinMode(pushButton, INPUT_PULLUP);
   pinMode(relay, OUTPUT);
+  digitalWrite(relay, HIGH);
   pinMode(debug, OUTPUT);
   
   while (!Serial) {
@@ -32,7 +33,7 @@ void setup() {
 } 
 
 void loop() { 
-  int sensorVal = digitalRead(sensor);
+  int sensorVal = !digitalRead(sensor);
   digitalWrite(debug, !sensorVal);
   
   // catch

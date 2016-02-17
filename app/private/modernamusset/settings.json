@@ -3,5 +3,6 @@
     "x": 3,
     "y": 11
   },
+  "slug": "modernamuseet",
   "arduinoPort": "/dev/cu.usbserial-A600HLZ3"
 }

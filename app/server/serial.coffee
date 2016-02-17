@@ -7,7 +7,7 @@ SerialPort.list (err, ports)->
 if Meteor.settings.arduinoPort?
 
   Arduino = new SerialPort.SerialPort Meteor.settings.arduinoPort, {
-    baudrate: 9600,
+    baudrate: 115200,
     # parser: SerialPort.parsers.readline('\r\n')
   }
 
