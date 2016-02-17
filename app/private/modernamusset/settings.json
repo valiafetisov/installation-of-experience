@@ -1,7 +1,7 @@
 {
   "public": {
     "x": 3,
-    "y": 16
+    "y": 11
   },
-  "arduinoPort": "/dev/cu.usbserial-A900D2V9"
+  "arduinoPort": "/dev/cu.usbserial-A600HLZ3"
 }

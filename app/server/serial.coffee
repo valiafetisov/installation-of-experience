@@ -24,10 +24,10 @@ if Meteor.settings.arduinoPort?
 
       when 'o'
         console.log 'door is opening'
+        Meteor.call 'exits'
 
       when 'r'
         console.log 'ready for new visitor'
-        Meteor.call 'exits'
 
       else
         console.error 'strange message recieved:', data
