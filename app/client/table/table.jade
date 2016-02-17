@@ -1,0 +1,13 @@
+template(name="table")
+
+  .table
+
+    each recordingsChunks
+      .row
+
+        each this
+          .cell
+
+            span.from {{{getPeriod this}}}
+
+    .cl
