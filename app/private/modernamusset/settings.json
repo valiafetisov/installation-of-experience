@@ -2,5 +2,6 @@
   "public": {
     "x": 3,
     "y": 16
-  }
+  },
+  "arduinoPort": "/dev/cu.usbserial-A900D2V9"
 }
