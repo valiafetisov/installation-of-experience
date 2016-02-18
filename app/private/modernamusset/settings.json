@@ -7,6 +7,7 @@
       "rows": 11,
       "padding": 80,
       "size": 40
+    }
   },
 
   "arduinoPort": "/dev/cu.usbserial-AL00UJXP"
