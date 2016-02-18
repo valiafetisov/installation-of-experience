@@ -1,0 +1,14 @@
+{
+  "slug": "local",
+
+  "public": {
+    "view": {
+      "cols": 3,
+      "rows": 11,
+      "padding": 80,
+      "size": 40
+    }
+  },
+
+  "arduinoPort": "/dev/cu.usbmodem1411"
+}
