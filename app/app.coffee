@@ -9,16 +9,17 @@ if Meteor.isServer
       # check if x and y exists
       if !Meteor.settings? or
         !Meteor.settings.public? or
-        !Meteor.settings.public.x? or
-        !Meteor.settings.public.y?
+        !Meteor.settings.public.view? or
+        !Meteor.settings.public.view.cols? or
+        !Meteor.settings.public.view.rows?
           @ready()
-          console.error "please provide a Meteor.settings.public.x and Meteor.settings.public.y"
+          console.error "please provide a Meteor.settings.public.view.cols and Meteor.settings.public.view.rows"
           return []
 
       # calculate the limit
-      maxLimit = Meteor.settings.public.x * Meteor.settings.public.y
+      # maxLimit = Meteor.settings.public.view.cols * Meteor.settings.public.view.rows
       fullCount = Records.find().count()
-      limit = fullCount % Meteor.settings.public.y + Meteor.settings.public.y * (Meteor.settings.public.x - 1)
+      limit = fullCount % Meteor.settings.public.view.rows + Meteor.settings.public.view.rows * (Meteor.settings.public.view.cols - 1)
 
       # return
       return Records.find {}, {sort: {from: -1}, limit: limit}

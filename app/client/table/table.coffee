@@ -1,9 +1,11 @@
 Template.table.onRendered ->
-  width = (100 - 1) / Meteor.settings.public.x
   Meteor.setTimeout ->
-    # $('.row').width('24%')
+    $('.table').css {
+      'padding': Meteor.settings.public.view.padding
+      'font-size': Meteor.settings.public.view.size
+    }
     $('.row').css 'width', (index)->
-      return (100 - 1) / Meteor.settings.public.x + '%'
+      return (100 - 1) / Meteor.settings.public.view.cols + '%'
   , 1000
 
 
@@ -12,9 +14,9 @@ Template.table.helpers {
   recordingsChunks: ->
     array = Records.find({}, {sort: {from: 1}}).fetch()
     if !array? then return
-    if !Meteor.settings.public.y? then return
+    if !Meteor.settings.public.view.rows? then return
     ret = []
-    chunk = Meteor.settings.public.y
+    chunk = Meteor.settings.public.view.rows
     i = 0
     j = array.length
     while i < j
