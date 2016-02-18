@@ -29,7 +29,7 @@ if Meteor.settings.arduinoPort?
       when 'r'
         console.log 'ready for new visitor'
       else
-        console.error 'strange message recieved:', data.toString('utf-8')
+        console.error 'strange message recieved:', symbol
 
   Arduino.on 'data', Meteor.bindEnvironment onData
 
