@@ -19,7 +19,7 @@ if Meteor.isServer
       # calculate the limit
       # maxLimit = Meteor.settings.public.view.cols * Meteor.settings.public.view.rows
       fullCount = Records.find().count()
-      limit = fullCount % Meteor.settings.public.view.rows + Meteor.settings.public.view.rows * (Meteor.settings.public.view.cols - 1)
+      limit = 1 + fullCount % Meteor.settings.public.view.rows + Meteor.settings.public.view.rows * (Meteor.settings.public.view.cols - 1)
 
       # return
       return Records.find {}, {sort: {from: -1}, limit: limit}

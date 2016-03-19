@@ -47,7 +47,7 @@
     delete Arduino.port
 
   onError: (data)->
-      console.log "port error", Arduino.port, data
+    console.log "port error", Arduino.port, data
 
   onData: (data)->
     str = data.toString 'utf-8'
