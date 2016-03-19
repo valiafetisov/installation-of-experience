@@ -1,29 +1,22 @@
-SerialPort.list (err, ports)->
+@Arduino = {
 
-  if !err
-    console.info 'list of com ports', ports.map((e)-> '\n' + e.comName).join()
-  else
-    console.error 'no com ports found', err
+  openArduino: Meteor.bindEnvironment (arduinoPort)->
+    Arduino.port = arduinoPort
+    Arduino.instance = new SerialPort.SerialPort arduinoPort, {
+      baudrate: 115200
+    }
+    Arduino.instance.on 'open', Meteor.bindEnvironment Arduino.onOpen
+    Arduino.instance.on 'data', Meteor.bindEnvironment Arduino.onData
 
-  # ports.forEach (port)->
-  #   console.log(port.comName);
+  onOpen: ()->
+    console.log "port opened", Arduino.port
 
-
-if Meteor.settings.arduinoPort?
-
-  Arduino = new SerialPort.SerialPort Meteor.settings.arduinoPort, {
-    baudrate: 115200
-  }
-
-  Arduino.on 'open', ->
-    console.log 'port is open now'
-
-  onData = (data)->
-    str = data.toString('utf-8')
+  onData: (data)->
+    str = data.toString 'utf-8'
     for i in [0..(str.length-1)]
-      processSymbol(str[i]);
+      Arduino.processSymbol str[i]
 
-  processSymbol = (symbol)->
+  processSymbol: (symbol)->
     switch symbol
       when 'c'
         console.log 'door is closing'
@@ -36,5 +29,26 @@ if Meteor.settings.arduinoPort?
       else
         console.error 'strange message recieved:', symbol
 
-  Arduino.on 'data', Meteor.bindEnvironment onData
+}
+
+
+SerialPort.list (err, ports)->
+  if err
+    throw new Meteor.Error 'no com ports found', err
+  console.info 'list of com ports', ports.map((e)-> '\n' + e.comName).join()
+
+  arduinoPorts = []
+  ports.forEach (port)->
+    if port.comName.indexOf('/dev/cu.usb') is 0
+      arduinoPorts.push port.comName
+
+  if arduinoPorts.length is 0
+    console.error "no arduino ports found"
+  else if arduinoPorts.length is 1
+    Arduino.openArduino arduinoPorts[0]
+  else
+    if Meteor.settings.arduinoPort in arduinoPorts
+      Arduino.openArduino Meteor.settings.arduinoPort
+    else
+      Arduino.openArduino arduinoPorts[0]
 
