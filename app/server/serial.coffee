@@ -3,7 +3,7 @@
   openArduino: Meteor.bindEnvironment (arduinoPort)->
     Arduino.port = arduinoPort
     Arduino.instance = new SerialPort.SerialPort arduinoPort, {
-      baudrate: 115200
+      baudrate: Meteor.settings.arduinoSpeed || 115200
     }
     Arduino.instance.on 'open', Meteor.bindEnvironment Arduino.onOpen
     Arduino.instance.on 'data', Meteor.bindEnvironment Arduino.onData

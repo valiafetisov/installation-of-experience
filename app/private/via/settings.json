@@ -3,6 +3,7 @@
 
   "public": {
     "view": {
+      "size": 40,
       "cols": 3,
       "rows": 11,
       "padding": {
@@ -10,10 +11,10 @@
         "bottom": 80,
         "left": 80,
         "right": 80
-      },
-      "size": 40
+      }
     }
   },
 
-  "arduinoPort": "/dev/cu.usbserial-A600HK1K"
+  "arduinoPort": "/dev/cu.usbserial-A600HK1K",
+  "arduinoSpeed": 9600
 }
