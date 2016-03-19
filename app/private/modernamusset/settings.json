@@ -5,7 +5,12 @@
     "view": {
       "cols": 3,
       "rows": 11,
-      "padding": 80,
+      "padding": {
+        "top": 80,
+        "bottom": 80,
+        "left": 80,
+        "right": 80
+      },
       "size": 40
     }
   },

@@ -1,7 +1,10 @@
 Template.table.onRendered ->
   Meteor.setTimeout ->
     $('.table').css {
-      'padding': Meteor.settings.public.view.padding
+      'padding-top': Meteor.settings.public.view.padding.top
+      'padding-bottom': Meteor.settings.public.view.padding.bottom
+      'padding-left': Meteor.settings.public.view.padding.left
+      'padding-right': Meteor.settings.public.view.padding.right
       'font-size': Meteor.settings.public.view.size
     }
     $('.row').css 'width', (index)->

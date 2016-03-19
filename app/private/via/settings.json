@@ -1,5 +1,5 @@
 {
-  "slug": "local",
+  "slug": "via",
 
   "public": {
     "view": {
@@ -15,5 +15,5 @@
     }
   },
 
-  "arduinoPort": "/dev/cu.usbmodem1411"
+  "arduinoPort": "/dev/cu.usbserial-A600HK1K"
 }
