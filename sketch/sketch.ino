@@ -1,7 +1,7 @@
 const int sensor = 8;
 const int relay = 7;
 const int debug = 13;
-const int pushButton = 6;
+const int emergencyButton = 6;
 
 int last = HIGH;
 boolean inside = false;
@@ -17,44 +17,44 @@ unsigned long max_inactive_time = 10*100000;
 
 int incomingByte;
 
-void setup() { 
+void setup() {
   Serial.begin(115200);
-  
+
   pinMode(sensor, INPUT_PULLUP);
-  pinMode(pushButton, INPUT_PULLUP);
+  pinMode(emergencyButton, INPUT_PULLUP);
   pinMode(relay, OUTPUT);
   digitalWrite(relay, HIGH);
   pinMode(debug, OUTPUT);
-  
+
   while (!Serial) {
     ;
   }
   Serial.write("r");
-} 
+}
 
-void loop() { 
+void loop() {
   int sensorVal = !digitalRead(sensor);
   digitalWrite(debug, !sensorVal);
-  
+
   // catch
-  if (inside == false && wait == false && sensorVal == LOW) {   
+  if (inside == false && wait == false && sensorVal == LOW) {
     close();
   }
-  
+
   // moved!
-  if (inside == true && wait == false && sensorVal == LOW) {   
+  if (inside == true && wait == false && sensorVal == LOW) {
     inside_time = 0;
   }
-  
+
   // check the time
   if(inside == true && wait == false && sensorVal == HIGH) {
     inside_time++;
     //Serial.println(inside_time);
     if (inside_time > max_inside_time) {
-      open();
+      emergencyOpen();
     }
   }
-  
+
   // wait for the first activity when door is open
   if(wait == true && inactive == true) {
     if(sensorVal == HIGH) {
@@ -68,7 +68,7 @@ void loop() {
       inactive = false;
     }
   }
-  
+
   // wait untill person is moving out
   if(wait == true && inactive == false) {
     if(sensorVal == HIGH) {
@@ -83,22 +83,22 @@ void loop() {
     }
   }
 
-  if (digitalRead(pushButton) == 0) {
+  if (digitalRead(emergencyButton) == 0) {
     open();
-    while(digitalRead(pushButton) == 0){
+    while(digitalRead(emergencyButton) == 0){
       //do nothing
     }
   }
-  
-  
+
+
   if (Serial.available() > 0) {
     incomingByte = Serial.read();
     if (incomingByte == 'o') {
       open();
-    } 
+    }
     if (incomingByte == 'w') {
       openWOwait();
-    } 
+    }
     if (incomingByte == 'c') {
       close();
     }
@@ -108,6 +108,14 @@ void loop() {
 
 void open() {
   Serial.write("o");
+  digitalWrite(relay, HIGH);
+  wait = true;
+  inactive = true;
+  inside = false;
+  inside_time = 0;
+}
+void emergencyOpen() {
+  Serial.write("e");
   digitalWrite(relay, HIGH);
   wait = true;
   inactive = true;
