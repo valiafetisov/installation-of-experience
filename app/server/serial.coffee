@@ -1,7 +1,12 @@
 SerialPort.list (err, ports)->
-  ports.forEach (port)->
-    console.log(port.comName);
-    console.log(port.pnpId);
+
+  if !err
+    console.info 'list of com ports', ports.map((e)-> '\n' + e.comName).join()
+  else
+    console.error 'no com ports found', err
+
+  # ports.forEach (port)->
+  #   console.log(port.comName);
 
 
 if Meteor.settings.arduinoPort?

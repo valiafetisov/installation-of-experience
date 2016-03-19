@@ -15,5 +15,5 @@
     }
   },
 
-  "arduinoPort": "/dev/cu.usbmodem1411"
+  "arduinoPort": "/dev/cu.usbmodem1431"
 }
