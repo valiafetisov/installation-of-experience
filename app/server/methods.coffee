@@ -11,7 +11,7 @@ Meteor.methods {
     # console.log "latestRecords", latestRecords
     if !latestRecords? or _.isEmpty(latestRecords) or !latestRecords[0]? then return "error: latestRecords is empty"
     latestRecord = latestRecords[0]
-    console.log "latestRecord._id", latestRecord, moment(latestRecord.from).format('HH:mm')
+    console.log "latestRecord", moment(latestRecord.from).format('HH:mm') + ' - ' + moment().format('HH:mm')
     Records.update latestRecord._id, {$set: {to: new Date(), reason: reason}}
     Records.remove {to: {$exists: false}}
     Records.remove {from: {$exists: false}}
