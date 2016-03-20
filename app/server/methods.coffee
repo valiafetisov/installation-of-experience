@@ -3,7 +3,8 @@ Meteor.methods {
   enters: ()->
     Records.remove {from: {$exists: false}}
     Records.remove {to: {$exists: false}}
-    Records.insert {from: new Date()}
+    id = Records.insert {from: new Date()}
+    Video.start(id)
     return 'ok'
 
   exits: (reason)->
@@ -16,6 +17,13 @@ Meteor.methods {
     Records.remove {to: {$exists: false}}
     Records.remove {from: {$exists: false}}
     return 'ok'
+
+  ready: ->
+    latestRecords = Records.find({from: {$exists: true}, to: {$exists: true}}, {sort: {from: -1}, limit: 1}).fetch()
+    if !latestRecords? or _.isEmpty(latestRecords) or !latestRecords[0]? then return "error: latestRecords is empty"
+    Video.stop(latestRecords[0]._id)
+    return 'ok'
+
 
 }
 

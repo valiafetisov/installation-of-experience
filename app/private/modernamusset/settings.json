@@ -15,6 +15,11 @@
     }
   },
 
+  "video": {
+    "folder": "/Users/modernamusset/conformity.io/videos",
+    "streamA": "rtsp://admin:***REMOVED***@192.168.1.65:554//Streaming/Channels/101"
+  },
+
   "arduinoPort": "/dev/cu.usbserial-AL00UJXP",
   "arduinoSpeed": 115200
 }

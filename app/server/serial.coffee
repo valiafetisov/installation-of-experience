@@ -66,6 +66,7 @@
         console.log 'door is opening by button'
         Meteor.call 'exits', 'emergency'
       when 'r'
+        Meteor.call 'ready'
         console.log 'ready for new visitor'
       else
         console.error 'strange message recieved:', symbol
