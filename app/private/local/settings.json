@@ -17,8 +17,10 @@
 
   "video": {
     "folder": "/Volumes/NO NAME/videos",
-    "streamB": "FaceTime",
-    "streamA": "http://tvsever.ru:1935/live/per1/playlist.m3u8?version=2"
+    "streams": {
+      "A": "FaceTime",
+      "B": "http://tvsever.ru:1935/live/per1/playlist.m3u8?version=2"
+    }
   },
 
   "arduinoPort": "/dev/cu.usbmodem1431",

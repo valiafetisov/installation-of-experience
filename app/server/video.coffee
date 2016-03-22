@@ -2,6 +2,9 @@
 
 @Video = {
 
+  instances: {}
+  currentFiles: {}
+
   isConfigurated: ->
     if !Meteor.settings?.video?
       # throw new Meteor.Error "no video configuration provided"
@@ -9,14 +12,14 @@
       return false
     return true
 
-  createFilePath: (_id)->
+  createFilePath: (name, _id)->
     rec = Records.findOne _id
     if !rec? then return
     from = moment(rec.from).format('YYYY-MM-DD_HH-mm-ss')
     @currentDir = Meteor.settings.video.folder + "/" + moment(rec.from).format('YYYY-MM-DD')
     if !fs.existsSync(@currentDir)
       fs.mkdirSync(@currentDir)
-    return @currentFile = @currentDir + "/" + "from_" + from + "_id_" + _id + ".mp4"
+    return @currentFiles[name] = @currentDir + "/" + "from_" + from + "_id_" + _id + "_" + name + ".mp4"
 
   createOutStream: (_id)->
     if !_id? then _id = ''
@@ -24,23 +27,25 @@
 
   start: (_id)->
     if !@isConfigurated() then return
-    @record(Meteor.settings.video.streamA, _id)
+    if !Meteor.settings.video.streams? then return
+    for name, stream of Meteor.settings.video.streams
+      Video.record(stream, name, _id)
 
-  record: (stream, _id) ->
+  record: (stream, name, _id) ->
     if stream.indexOf('rtsp://') isnt 0 and
       stream.indexOf('http://') isnt 0
-        Video.instance = ffmpeg(stream)
+        Video.instances[name] = ffmpeg(stream)
         .inputFormat('avfoundation')
         .toFormat('mp4')
         .videoCodec('libx264')
 
     else
-      Video.instance = ffmpeg(stream)
+      Video.instances[name] = ffmpeg(stream)
       .format('mp4')
       .toFormat('mp4')
       .videoCodec('copy')
 
-    Video.instance
+    Video.instances[name]
     .outputOptions('-movflags frag_keyframe+empty_moov')
     .outputOptions('-pix_fmt yuv420p')
     .on('error', (err)->
@@ -49,28 +54,30 @@
     .on('end', ->
       console.log 'Processing finished!'
     )
-    .save Video.createFilePath(_id)
+    .save Video.createFilePath(name, _id)
 
   stop: (_id)->
     if !@isConfigurated() then return
-    # console.log "Video.instance", Video.instance
-    if Video.instance? and Video.instance.kill?
+    if !Meteor.settings.video.streams? then return
+
+    rec = Records.findOne _id
+    if !rec? then return
+    from = moment(rec.from).format('YYYY-MM-DD_HH-mm-ss')
+    to = moment(rec.to).format('YYYY-MM-DD_HH-mm-ss')
+
+    for name, stream of Meteor.settings.video.streams
+      if !Video.instances[name]? or !Video.instances[name].kill? then return
 
       try
-        Video.instance.kill()
-      catch e
         # Video.instance.kill('SIGINT')
+        Video.instances[name].kill()
+      catch e
         console.log 'video stoped (hopefully)', e
 
-      delete Video.instance
+      delete Video.instances[name]
 
-      rec = Records.findOne _id
-      if !rec? then return
-
-      from = moment(rec.from).format('YYYY-MM-DD_HH-mm-ss')
-      to = moment(rec.to).format('YYYY-MM-DD_HH-mm-ss')
-      newPath = Video.currentDir + '/' + "from_" + from + "_to_" + to + "_id_" + _id + ".mp4"
-      if fs.existsSync(Video.currentFile) then fs.renameSync(Video.currentFile, newPath)
+      newPath = Video.currentDir + '/' + "from_" + from + "_to_" + to + "_id_" + _id + "_" + name + ".mp4"
+      if fs.existsSync(Video.currentFiles[name]) then fs.renameSync(Video.currentFiles[name], newPath)
 
 }
 
