@@ -3,7 +3,7 @@ Meteor.methods {
   enters: ()->
     Records.remove {from: {$exists: false}}
     Records.remove {to: {$exists: false}}
-    id = Records.insert {from: new Date()}
+    id = Records.insert {from: new Date(), slug: Meteor.settings.slug}
     Video.start(id)
     return 'ok'
 
