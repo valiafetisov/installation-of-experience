@@ -16,10 +16,9 @@
   },
 
   "video": {
-    "folder": "/Volumes/NO NAME 1/videos",
-    "streamA": "FaceTime",
-    "folderB": "/Users/user/WORK/modernamusset/meteorVideos",
-    "streamB": "http://tvsever.ru:1935/live/per1/playlist.m3u8?version=2"
+    "folder": "/Volumes/NO NAME/videos",
+    "streamB": "FaceTime",
+    "streamA": "http://tvsever.ru:1935/live/per1/playlist.m3u8?version=2"
   },
 
   "arduinoPort": "/dev/cu.usbmodem1431",

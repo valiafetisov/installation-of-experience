@@ -18,28 +18,31 @@
       fs.mkdirSync(@currentDir)
     return @currentFile = @currentDir + "/" + "from_" + from + "_id_" + _id + ".mp4"
 
-
   createOutStream: (_id)->
     if !_id? then _id = ''
     return fs.createWriteStream createFilePath(_id)
 
   start: (_id)->
     if !@isConfigurated() then return
+    @record(Meteor.settings.video.streamA, _id)
 
-    if Meteor.settings.video.streamA.indexOf('rtsp://') isnt 0
-      Video.instance = ffmpeg(Meteor.settings.video.streamA)
-      .inputFormat('avfoundation')
-      .toFormat('mp4')
-      .videoCodec('libx264')
+  record: (stream, _id) ->
+    if stream.indexOf('rtsp://') isnt 0 and
+      stream.indexOf('http://') isnt 0
+        Video.instance = ffmpeg(stream)
+        .inputFormat('avfoundation')
+        .toFormat('mp4')
+        .videoCodec('libx264')
 
     else
-      Video.instance = ffmpeg(Meteor.settings.video.streamA)
-      .inputFormat('mp4')
+      Video.instance = ffmpeg(stream)
+      .format('mp4')
       .toFormat('mp4')
       .videoCodec('copy')
 
     Video.instance
     .outputOptions('-movflags frag_keyframe+empty_moov')
+    .outputOptions('-pix_fmt yuv420p')
     .on('error', (err)->
       console.log 'An error occurred:', err
     )
@@ -54,9 +57,10 @@
     if Video.instance? and Video.instance.kill?
 
       try
-        Video.instance.kill('SIGINT')
-      catch e
         Video.instance.kill()
+      catch e
+        # Video.instance.kill('SIGINT')
+        console.log 'video stoped (hopefully)', e
 
       delete Video.instance
 
@@ -66,7 +70,7 @@
       from = moment(rec.from).format('YYYY-MM-DD_HH-mm-ss')
       to = moment(rec.to).format('YYYY-MM-DD_HH-mm-ss')
       newPath = Video.currentDir + '/' + "from_" + from + "_to_" + to + "_id_" + _id + ".mp4"
-      fs.renameSync(Video.currentFile, newPath)
+      if fs.existsSync(Video.currentFile) then fs.renameSync(Video.currentFile, newPath)
 
 }
 

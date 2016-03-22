@@ -12,7 +12,7 @@ Meteor.methods {
     # console.log "latestRecords", latestRecords
     if !latestRecords? or _.isEmpty(latestRecords) or !latestRecords[0]? then return "error: latestRecords is empty"
     latestRecord = latestRecords[0]
-    console.log "latestRecord", moment(latestRecord.from).format('HH:mm') + ' - ' + moment().format('HH:mm')
+    console.log "latestRecord", moment(latestRecord.from).format('HH:mm:ss') + ' - ' + moment().format('HH:mm:ss')
     Records.update latestRecord._id, {$set: {to: new Date(), reason: reason}}
     Records.remove {to: {$exists: false}}
     Records.remove {from: {$exists: false}}
@@ -20,7 +20,8 @@ Meteor.methods {
 
   ready: ->
     latestRecords = Records.find({from: {$exists: true}, to: {$exists: true}}, {sort: {from: -1}, limit: 1}).fetch()
-    if !latestRecords? or _.isEmpty(latestRecords) or !latestRecords[0]? then return "error: latestRecords is empty"
+    if !latestRecords? or _.isEmpty(latestRecords) or !latestRecords[0]? or latestRecords[0].ready? then return "error: latestRecords is empty"
+    Records.update latestRecords[0]._id, {$set: {ready: new Date()}}
     Video.stop(latestRecords[0]._id)
     return 'ok'
 

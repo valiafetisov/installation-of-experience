@@ -51,7 +51,7 @@ void loop() {
     inside_time++;
     //Serial.println(inside_time);
     if (inside_time > max_inside_time) {
-      emergencyOpen();
+      open();
     }
   }
 
@@ -84,7 +84,7 @@ void loop() {
   }
 
   if (digitalRead(emergencyButton) == 0) {
-    open();
+    emergencyOpen();
     while(digitalRead(emergencyButton) == 0){
       //do nothing
     }
