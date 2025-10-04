@@ -1,0 +1,14 @@
+.table {
+    padding: 80px;
+}
+
+.table .row {
+    box-sizing: border-box;
+    width: 33%;
+    float: left;
+    text-align: center;
+}
+
+.table .cl {
+    clear: both;
+}
