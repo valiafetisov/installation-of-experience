@@ -10,8 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "ffmpeg": "^0.0.4",
     "nuxt": "^4.1.2",
     "nuxt-typeorm": "^0.0.8",
+    "serialport": "^13.0.0",
     "sqlite3": "^5.1.7",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"

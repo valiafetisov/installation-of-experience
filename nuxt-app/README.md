@@ -1,33 +1,21 @@
-# Nuxt Minimal Starter
+# Installation of Experience Application
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+The code which primary functions are:
+- Receive serial commands from Arduino controller regarding the state of the room
+- Keep clean sqlite database with every visit to the room
+- Display latest database records in a table
+- Record videos from two IP cameras
+- Upload videos to the specified remote server
 
-## Setup
+Written using [nuxt framework](https://nuxt.com/docs/getting-started/introduction).
 
-Make sure to install dependencies:
+## Environment variables
 
-```bash
-npm install
-```
+- `PATH_TO_ARDUINO_PORT` (optional, default: first port starting with `/dev/cu.usb`) – path to a specific COM port on which Arduino is connected. Note that the Arduino should be pre-programmed with `../sketch` source code before being specified here
 
-## Development Server
+## Quick start
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
+0. Specify env variables required above
+1. Install dependencies via `npm install`
+2. Run dev server via `npm run dev`
+3. For production, build the system via `npm run build`, preview via `npm run preview`

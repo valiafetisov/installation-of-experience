@@ -3,6 +3,7 @@ import { getRepository } from '#typeorm'
 import { Record } from './entities/record.entity'
 
 export const EXIT_REASON_CORRECT = 'MOTIONLESS'
+export const EXIT_REASON_EMERGENCY = 'EMERGENCY'
 const EXIT_REASON_UNKNOWN = 'UNKNOWN'
 
 export const getLastUnfinishedVisit = async () => {
@@ -44,13 +45,15 @@ export const getAllVisits = async () => {
 
 export const finaliseAll = async () => {
     const records = await getRepository(Record)
-    await records.update({ exitReason: IsNull() }, { exitReason: EXIT_REASON_UNKNOWN })
+    const finalised = await records.update({ exitReason: IsNull() }, { exitReason: EXIT_REASON_UNKNOWN })
+    console.log('finalised', finalised)
 }
 
 export const enter = async () => {
     const records = await getRepository(Record)
     await finaliseAll()
     const record = await records.insert({})
+    console.info('enter: the visit is started', record.generatedMaps[0].visitStartedAt)
     return {
         record,
     }
@@ -63,6 +66,7 @@ export const exit = async (reason: string) => {
     }
     lastRecord.exitReason = reason
     lastRecord.visitFinishedAt = new Date()
+    console.info('exit: the visit has ended', lastRecord.visitFinishedAt)
     const records = await getRepository(Record)
     await records.save(lastRecord)
     return lastRecord
