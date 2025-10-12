@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
         }
     }
     return {
-        visits: await getValidVisits(),
+        ...await getValidVisits(),
         last: await getLastUnfinishedVisit(),
     }
 })

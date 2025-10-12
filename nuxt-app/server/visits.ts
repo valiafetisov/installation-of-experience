@@ -21,7 +21,7 @@ export const getLastUnfinishedVisit = async () => {
 
 export const getValidVisits = async () => {
     const records = await getRepository(Record)
-    return await records.find({
+    const [visits, total] = await records.findAndCount({
         where:
             [
                 { exitReason: EXIT_REASON_CORRECT }
@@ -32,6 +32,7 @@ export const getValidVisits = async () => {
         },
         take: 100
     })
+    return { visits, total }
 }
 
 export const getAllVisits = async () => {
