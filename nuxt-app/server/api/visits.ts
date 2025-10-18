@@ -10,8 +10,11 @@ export default defineEventHandler(async (event) => {
             visits: await getAllVisits(),
         }
     }
-    return {
-        ...await getValidVisits(),
-        last: await getLastUnfinishedVisit(),
+    const results = await getValidVisits()
+    const last = await getLastUnfinishedVisit()
+    if (last) {
+        results.visits.push(last)
+        results.total++
     }
+    return results
 })

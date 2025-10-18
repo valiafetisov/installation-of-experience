@@ -12,13 +12,10 @@ const amountOfRowsThatFitsOnScreen = computed(() => {
   const availableSpace = height.value - fontSize * 4 // height: calc(100vh - 4rem)
   return Math.floor(availableSpace / blockSize)
 })
-const amountOfItemsThatFitsOnScreen = computed(() => amountOfRowsThatFitsOnScreen.value * 3)
-const dbItemsAmountTotal = computed(() => !data.value.last ? data.value.total : data.value.total + 1)
-const visitsAmountTotal = computed(() => !data.value.last ? data.value.visits.length : data.value.visits.length + 1)
-const amountToDisplay = computed(() => dbItemsAmountTotal.value % amountOfItemsThatFitsOnScreen.value)
+const amountToDisplay = computed(() => 1 + data.value.total % amountOfRowsThatFitsOnScreen.value + amountOfRowsThatFitsOnScreen.value * 2)
 const limitedVisits = computed(() => {
-  if (visitsAmountTotal.value > amountToDisplay.value) {
-    return data.value.visits.slice((amountToDisplay.value + amountOfRowsThatFitsOnScreen.value * 2) * -1)
+  if (data.value.visits.length > amountToDisplay.value) {
+    return data.value.visits.slice(amountToDisplay.value * -1) // -1 since we want to get the latest visits from array
   }
   return data.value.visits
 })
@@ -38,11 +35,13 @@ useIntervalFn(() => {
 
 <template>
   <div class="container">
-    <div v-for="visit in limitedVisits">
-      {{`${formatTime(visit.visitStartedAt)} – ${formatTime(visit.visitFinishedAt)}`}}
-    </div>
-    <div v-if="data.last">
-      {{`${formatTime(data.last.visitStartedAt)} – ${formatNow(now)}`}}
+    <div v-for="visit in limitedVisits" :id="visit.id">
+      <span v-if="visit.visitFinishedAt">
+        {{`${formatTime(visit.visitStartedAt)} – ${formatTime(visit.visitFinishedAt)}`}}
+      </span>
+      <span v-else>
+        {{`${formatTime(visit.visitStartedAt)} – ${formatNow(now)}`}}
+      </span>
     </div>
   </div>
 </template>

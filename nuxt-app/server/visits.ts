@@ -22,11 +22,10 @@ export const getLastUnfinishedVisit = async () => {
 export const getValidVisits = async () => {
     const records = await getRepository(Record)
     const [visits, total] = await records.findAndCount({
-        where:
-            [
-                { exitReason: EXIT_REASON_CORRECT }
-            ]
-        ,
+        where: {
+            exitReason: EXIT_REASON_CORRECT,
+            // visitStartedAt: MoreThanOrEqual(startOfToday()) // only return records from today
+        },
         order: {
             visitStartedAt: 'ASC'
         },
@@ -47,7 +46,9 @@ export const getAllVisits = async () => {
 export const finaliseAll = async () => {
     const records = await getRepository(Record)
     const finalised = await records.update({ exitReason: IsNull() }, { exitReason: EXIT_REASON_UNKNOWN })
-    console.log('finalised', finalised)
+    if (finalised.affected && finalised.affected > 0) {
+        console.log('finalised records:', finalised.raw)
+    }
 }
 
 export const enter = async () => {
