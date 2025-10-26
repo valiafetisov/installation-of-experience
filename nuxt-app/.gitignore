@@ -1,4 +1,6 @@
 *.sqlite
+*.mp4
+recordings/**/**
 
 # Nuxt dev/build outputs
 .output
