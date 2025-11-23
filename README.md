@@ -23,7 +23,7 @@ In this work, the artist was personally interested in people who, despite the "i
 
 Contains Arduino/C++ code to run on a controller like Arduino. The controller suppose to be connected to 1) Electromechanicall sliding door (using its dry lock/unlock contacts) 2) Motion sensor 3) Emergency button 4) The PC. The purpose of the code is to measure "inactivity duration" in the room using motion sensor, open or close sliding door and notify the PC about the state of the room.
 
-### [App](app/) folder
+### [Web-app](web-app/) folder
 
 Contains Node/Meteor.js code to run on a PC / bigger controller like Raspberry PI, connected to the Arduino, the TV and the internet. The purpose of the code is to receive signal from Arduino controller regarding the state of the room, keep database with every visit to the room, record videos and upload them to a remote server. The server also exposes a small web page which shows realtime data of the recorded visits, to be displayed on the TV in the room.
 
