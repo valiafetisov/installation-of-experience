@@ -14,7 +14,7 @@ Written using [nuxt framework](https://nuxt.com/docs/getting-started/introductio
 - `CAMERA_STREAM_*` – RTPS urls with valid H264 streams coming from IP cameras
     - `CAMERA_STREAM_INSIDE` (required) – RTPS from the camera inside the room
     - `CAMERA_STREAM_OUTSIDE` (required) – RTPS from the camera outside of the room
-- `PATH_TO_ARDUINO_PORT` (optional, default: first port starting with `/dev/cu.usb`) – path to a specific COM port on which Arduino is connected. Note that the Arduino should be pre-programmed with `../sketch` source code before being specified here
+- `PATH_TO_ARDUINO_PORT` (optional, default: first port starting with `/dev/tty.usb`) – path to a specific COM port on which Arduino is connected. Note that the Arduino should be pre-programmed with `../sketch` source code before being specified here
 
 ## Quick start
 
