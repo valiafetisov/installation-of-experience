@@ -1,6 +1,7 @@
 *.sqlite
 *.mp4
 recordings/**/**
+!recordings/.gitkeep
 
 # Nuxt dev/build outputs
 .output
