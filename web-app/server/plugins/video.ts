@@ -1,5 +1,6 @@
 import type { FfmpegCommand } from 'fluent-ffmpeg'
 import fs from 'node:fs'
+import path from 'node:path'
 import ffmpeg from 'fluent-ffmpeg'
 import { format } from 'date-fns'
 
@@ -9,13 +10,14 @@ const config = {
 } as const
 const folder = `./recordings/`
 
-const recordings: { instance: FfmpegCommand; path: string, name: keyof typeof config }[] = []
+const recordings: { instance: FfmpegCommand; filePath: string, cameraName: keyof typeof config }[] = []
 
-const start = function (id: string, startDate: Date, name: keyof typeof config) {
+const start = function (id: string, startDate: Date, cameraName: keyof typeof config) {
     if (!fs.existsSync(folder)) { fs.mkdirSync(folder) }
-    const path = `./recordings/from_${format(startDate, 'yyyy-MM-dd_HH-mm-ss')}_id_${id}_${name}.mp4`
-    console.info(`video: "${name}": starting to record to "${path}"`)
-    const instance = ffmpeg(config[name])
+    const fileName = `from_${format(startDate, 'yyyy-MM-dd_HH-mm-ss')}_id_${id}_${cameraName}.mp4`
+    const filePath = path.join(folder, fileName)
+    console.info(`video: "${cameraName}": starting to record to "${filePath}"`)
+    const instance = ffmpeg(config[cameraName])
         .format('mp4')
         .toFormat('mp4')
         .videoCodec('copy')
@@ -23,25 +25,25 @@ const start = function (id: string, startDate: Date, name: keyof typeof config) 
         // .outputOptions('-pix_fmt yuv420p')
         .on('error', (err: any) => {
             if (err?.message?.includes('received signal 2')) return
-            console.error(`video: "${name}": recording error:`, err)
+            console.error(`video: "${cameraName}": recording error:`, err)
         })
         .on('end', () => {
-            console.error(`video: "${name}": ffmpeg stream finished`)
+            console.error(`video: "${cameraName}": ffmpeg stream finished`)
         })
-        .save(path)
-    return { instance, path, name }
+        .save(filePath)
+    return { instance, filePath, cameraName }
 }
 
 export const stopAll = function () {
     const recordedPaths = []
     while (recordings.length > 0) {
         const recording = recordings[0]
-        console.info(`video: "${recording.name}": stopping`)
+        console.info(`video: "${recording.cameraName}": stopping`)
         try {
             recording.instance.kill('SIGINT')
-            recordedPaths.push(recording.path)
+            recordedPaths.push(recording.filePath)
         } catch (error) {
-            console.error(`video: "${recording.name}": stop error: `, error)
+            console.error(`video: "${recording.cameraName}": stop error: `, error)
         }
         recordings.splice(0, 1)
     }
@@ -53,10 +55,10 @@ export const stopAll = function () {
 
 export const startAll = function (id: string, startDate: Date) {
     stopAll()
-    for (const name of Object.keys(config) as Array<keyof typeof config>) {
-        if (!config[name]) continue
+    for (const cameraName of Object.keys(config) as Array<keyof typeof config>) {
+        if (!config[cameraName]) continue
         try {
-            recordings.push(start(id, startDate, name))
+            recordings.push(start(id, startDate, cameraName))
         } catch (error) {
             console.error(`video: "${name}": start error`, error)
         }
