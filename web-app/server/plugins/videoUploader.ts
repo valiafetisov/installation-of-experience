@@ -7,17 +7,18 @@ import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s
 let filesToUpload: string[] = []
 let isUploadingInProgress = false
 const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
+    region: process.env.S3_REGION,
+    endpoint: process.env.S3_ENDPOINT,
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
     },
 })
 
 const upload = async (filePath: string) => {
     console.info(`uploader: check if "${filePath}" already exists in S3`)
     const response = await s3Client.send(new HeadObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME || '',
+        Bucket: process.env.S3_BUCKET_NAME || '',
         Key: path.basename(filePath),
     })).catch(() => undefined)
     if (response?.ContentLength != undefined && response.ContentLength > 0) {
@@ -29,7 +30,7 @@ const upload = async (filePath: string) => {
     console.info(`uploader: uploading "${filePath}" to S3`)
     const readStream = fs.createReadStream(filePath)
     const uploadParams = {
-        Bucket: process.env.AWS_S3_BUCKET_NAME || '',
+        Bucket: process.env.S3_BUCKET_NAME || '',
         Key: path.basename(filePath),
         Body: readStream,
         ContentType: 'video/mp4',
@@ -87,14 +88,14 @@ const buildFileQueueAndUploadOne = async () => {
 // Run on startup
 export default defineNitroPlugin(() => {
     // check s3 credentials
-    if (!process.env.AWS_REGION ||
-        !process.env.AWS_ACCESS_KEY_ID ||
-        !process.env.AWS_SECRET_ACCESS_KEY ||
-        !process.env.AWS_S3_BUCKET_NAME) {
+    if (!process.env.S3_REGION ||
+        !process.env.S3_ACCESS_KEY_ID ||
+        !process.env.S3_SECRET_ACCESS_KEY ||
+        !process.env.S3_BUCKET_NAME) {
         console.error(`uploader: missing env variables for uploading the videos`)
         return
     }
-    console.info(`uploader: s3 uploader initialized for bucket "${process.env.AWS_S3_BUCKET_NAME}"`)
+    console.info(`uploader: s3 uploader initialized for bucket "${process.env.S3_BUCKET_NAME}"`)
     // start loop to upload files every minute
     setInterval(buildFileQueueAndUploadOne, 10 * 1000)
     buildFileQueueAndUploadOne()

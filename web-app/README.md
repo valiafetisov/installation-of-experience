@@ -14,12 +14,13 @@ Written using [nuxt framework](https://nuxt.com/docs/getting-started/introductio
 - `CAMERA_STREAM_*` – RTPS urls with valid H264 streams coming from IP cameras
     - `CAMERA_STREAM_INSIDE` (required) – RTPS from the camera inside the room
     - `CAMERA_STREAM_OUTSIDE` (required) – RTPS from the camera outside of the room
+- `S3_*` (required) – credentials with (write and meta-data read) access to the S3-compatible bucket where videos will be uploaded automatically as soon as they are recorded
+    - `S3_REGION` (required) – region of your bucket
+    - `S3_BUCKET_NAME` (required) – name of your bucket
+    - `S3_ACCESS_KEY_ID` (required) – access key ID (of your IAM user which have access to the S3 bucket)
+    - `S3_SECRET_ACCESS_KEY` (required) – access key secret (of your IAM user which have access to the S3 bucket)
+    - `S3_ENDPOINT` (optional, default empty) – endpoint which is nessesery to provide only if you're using non-AWS, unofficial S3 service
 - `PATH_TO_ARDUINO_PORT` (optional, default: first port starting with `/dev/tty.usb`) – path to a specific COM port on which Arduino is connected. Note that the Arduino should be pre-programmed with `../sketch` source code before being specified here
-- `AWS_*` (optional) – credentials with write access to the S3-like bucket where videos will be uploaded automatically
-    - `AWS_REGION` (required) – AWS region of your bucket
-    - `AWS_S3_BUCKET_NAME` (required) – name of your bucket
-    - `AWS_ACCESS_KEY_ID` (required) – access key ID (of your IAM user which have access to the S3 bucket)
-    - `AWS_SECRET_ACCESS_KEY` (required) – access key secret (of your IAM user which have access to the S3 bucket)
 
 ## Quick start
 
