@@ -4,16 +4,9 @@ import { finished } from 'node:stream/promises'
 import { outputFolder } from './videoRecorder'
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
 
-let filesToUpload: string[] = []
+let filesToUpload = new Set<string>()
 let isUploadingInProgress = false
-const s3Client = new S3Client({
-    region: process.env.S3_REGION,
-    endpoint: process.env.S3_ENDPOINT,
-    credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-    },
-})
+let s3Client: S3Client
 
 const upload = async (filePath: string) => {
     console.info(`uploader: check if "${filePath}" already exists in S3`)
@@ -24,7 +17,7 @@ const upload = async (filePath: string) => {
     if (response?.ContentLength != undefined && response.ContentLength > 0) {
         console.info(`uploader: file "${filePath}" already exists in S3, skipping upload`)
         await fs.promises.unlink(filePath)
-        filesToUpload.splice(filesToUpload.indexOf(filePath), 1)
+        filesToUpload.delete(filePath)
         return
     }
     console.info(`uploader: uploading "${filePath}" to S3`)
@@ -42,7 +35,7 @@ const upload = async (filePath: string) => {
         await finished(readStream)
         // delete the local file after successful upload
         await fs.promises.unlink(filePath)
-        filesToUpload.splice(filesToUpload.indexOf(filePath), 1)
+        filesToUpload.delete(filePath)
         console.info(`uploader: successfully uploaded and deleted "${filePath}"`)
         return data
     } catch (err) {
@@ -54,13 +47,13 @@ const upload = async (filePath: string) => {
 const buildFileQueue = async () => {
     const fileNames = (await fs.promises.readdir(outputFolder)).filter(file => file.endsWith('.mp4'))
     const filePaths = fileNames.map(fileName => path.join(outputFolder, fileName))
-    filesToUpload = [...filePaths]
+    filesToUpload = new Set(filePaths)
     console.info(`uploader: ${fileNames.length} files in the queue ${fileNames.join(', ')}`)
 }
 
 const uploadOneFromQueue = async () => {
-    // pick a random file from the queue (altrough usually there should just be two files max)
-    const fileToUpload = filesToUpload[Math.floor(Math.random() * filesToUpload.length)]
+    // pick a random file from the queue (although usually there should just be two files max)
+    const fileToUpload = Array.from(filesToUpload)[Math.floor(Math.random() * filesToUpload.size)]
     if (!fileToUpload) {
         return
     }
@@ -77,7 +70,7 @@ const uploadOneFromQueue = async () => {
         }
     }
     isUploadingInProgress = false
-    buildFileQueueAndUploadOne()
+    await buildFileQueueAndUploadOne()
 }
 
 const buildFileQueueAndUploadOne = async () => {
@@ -95,8 +88,16 @@ export default defineNitroPlugin(() => {
         console.error(`uploader: missing env variables for uploading the videos`)
         return
     }
+    s3Client = new S3Client({
+        region: process.env.S3_REGION,
+        endpoint: process.env.S3_ENDPOINT,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        },
+    })
     console.info(`uploader: s3 uploader initialized for bucket "${process.env.S3_BUCKET_NAME}"`)
-    // start loop to upload files every minute
+    // periodically check for new files to upload
     setInterval(buildFileQueueAndUploadOne, 10 * 1000)
     buildFileQueueAndUploadOne()
 })

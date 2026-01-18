@@ -19,7 +19,7 @@ Written using [nuxt framework](https://nuxt.com/docs/getting-started/introductio
     - `S3_BUCKET_NAME` (required) – name of your bucket
     - `S3_ACCESS_KEY_ID` (required) – access key ID (of your IAM user which have access to the S3 bucket)
     - `S3_SECRET_ACCESS_KEY` (required) – access key secret (of your IAM user which have access to the S3 bucket)
-    - `S3_ENDPOINT` (optional, default empty) – endpoint which is nessesery to provide only if you're using non-AWS, unofficial S3 service
+    - `S3_ENDPOINT` (optional, default empty) – endpoint which is necessary to provide only if you're using non-AWS, unofficial S3 service
 - `PATH_TO_ARDUINO_PORT` (optional, default: first port starting with `/dev/tty.usb`) – path to a specific COM port on which Arduino is connected. Note that the Arduino should be pre-programmed with `../sketch` source code before being specified here
 
 ## Quick start
