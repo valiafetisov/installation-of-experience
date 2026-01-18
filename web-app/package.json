@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.971.0",
     "@vueuse/core": "^13.9.0",
     "date-fns": "^4.1.0",
     "fluent-ffmpeg": "^2.1.3",
