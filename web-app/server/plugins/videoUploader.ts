@@ -1,7 +1,5 @@
 import fs from 'node:fs'
-// import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-// import stream from 'node:stream'
 import { finished } from 'node:stream/promises'
 import { outputFolder } from './videoRecorder'
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
