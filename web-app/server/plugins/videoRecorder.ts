@@ -4,18 +4,18 @@ import path from 'node:path'
 import ffmpeg from 'fluent-ffmpeg'
 import { format } from 'date-fns'
 
+export const outputFolder = `./recordings/`
+
 const config = {
     inside: process.env.CAMERA_STREAM_INSIDE,
     outside: process.env.CAMERA_STREAM_OUTSIDE,
 } as const
-const folder = `./recordings/`
-
 const recordings: { instance: FfmpegCommand; filePath: string, cameraName: keyof typeof config }[] = []
 
 const start = function (id: string, startDate: Date, cameraName: keyof typeof config) {
-    if (!fs.existsSync(folder)) { fs.mkdirSync(folder) }
+    if (!fs.existsSync(outputFolder)) { fs.mkdirSync(outputFolder) }
     const fileName = `from_${format(startDate, 'yyyy-MM-dd_HH-mm-ss')}_id_${id}_${cameraName}.mp4`
-    const filePath = path.join(folder, fileName)
+    const filePath = path.join(outputFolder, fileName)
     console.info(`video: "${cameraName}": starting to record to "${filePath}"`)
     const instance = ffmpeg(config[cameraName])
         .format('mp4')

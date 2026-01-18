@@ -1,7 +1,7 @@
 import { IsNull } from 'typeorm'
 import { getRepository } from '#typeorm'
 import { Record } from './entities/record.entity'
-import { startAll, stopAll } from './plugins/video'
+import { startAll, stopAll } from './plugins/videoRecorder'
 
 export const EXIT_REASON_CORRECT = 'MOTIONLESS'
 export const EXIT_REASON_EMERGENCY = 'EMERGENCY'
