@@ -3,8 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import ffmpeg from 'fluent-ffmpeg'
 import { format } from 'date-fns'
-
-export const outputFolder = `./recordings/`
+import { buildFileQueueAndUpload, recordingsFolder } from './videoUploader'
 
 const config = {
     inside: process.env.CAMERA_STREAM_INSIDE,
@@ -13,9 +12,9 @@ const config = {
 const recordings: { instance: FfmpegCommand; filePath: string, cameraName: keyof typeof config }[] = []
 
 const start = function (id: string, startDate: Date, cameraName: keyof typeof config) {
-    if (!fs.existsSync(outputFolder)) { fs.mkdirSync(outputFolder) }
+    if (!fs.existsSync(recordingsFolder)) { fs.mkdirSync(recordingsFolder) }
     const fileName = `from_${format(startDate, 'yyyy-MM-dd_HH-mm-ss')}_id_${id}_${cameraName}.mp4`
-    const filePath = path.join(outputFolder, fileName)
+    const filePath = path.join(recordingsFolder, fileName)
     console.info(`video: "${cameraName}": starting to record to "${filePath}"`)
     const instance = ffmpeg(config[cameraName])
         .format('mp4')
@@ -50,6 +49,7 @@ export const stopAll = function () {
     if (recordedPaths.length > 0) {
         console.info(`video: all streams stopped: "${recordedPaths.join(', ')}"`)
     }
+    buildFileQueueAndUpload()
     return recordedPaths
 }
 

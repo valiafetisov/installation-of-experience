@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { finished } from 'node:stream/promises'
-import { outputFolder } from './videoRecorder'
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
+
+export const recordingsFolder = `./recordings/`
 
 let filesToUpload = new Set<string>()
 let isUploadingInProgress = false
@@ -45,16 +46,19 @@ const upload = async (filePath: string) => {
 }
 
 const buildFileQueue = async () => {
-    const fileNames = (await fs.promises.readdir(outputFolder)).filter(file => file.endsWith('.mp4'))
-    const filePaths = fileNames.map(fileName => path.join(outputFolder, fileName))
+    const fileNames = (await fs.promises.readdir(recordingsFolder)).filter(file => file.endsWith('.mp4'))
+    const filePaths = fileNames.map(fileName => path.join(recordingsFolder, fileName))
     filesToUpload = new Set(filePaths)
     console.info(`uploader: ${fileNames.length} files in the queue ${fileNames.join(', ')}`)
 }
 
 const uploadOneFromQueue = async () => {
     // pick a random file from the queue (although usually there should just be two files max)
-    const fileToUpload = Array.from(filesToUpload)[Math.floor(Math.random() * filesToUpload.size)]
-    if (!fileToUpload) {
+    const shuffledFilesToUpload = Array.from(filesToUpload)
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value)
+    if (shuffledFilesToUpload.length === 0) {
         return
     }
     if (isUploadingInProgress) {
@@ -62,18 +66,17 @@ const uploadOneFromQueue = async () => {
         return
     }
     isUploadingInProgress = true
-    {
+    for (const fileToUpload of shuffledFilesToUpload) {
         try {
             await upload(fileToUpload)
         } catch (error) {
-            console.error(`uploader: failed to upload "${fileToUpload}": `, error)
+            console.error(`uploader: failed to upload "${fileToUpload}":`, error)
         }
     }
     isUploadingInProgress = false
-    await buildFileQueueAndUploadOne()
 }
 
-const buildFileQueueAndUploadOne = async () => {
+export const buildFileQueueAndUpload = async () => {
     await buildFileQueue()
     await uploadOneFromQueue()
 }
@@ -97,7 +100,6 @@ export default defineNitroPlugin(() => {
         },
     })
     console.info(`uploader: s3 uploader initialized for bucket "${process.env.S3_BUCKET_NAME}"`)
-    // periodically check for new files to upload
-    setInterval(buildFileQueueAndUploadOne, 10 * 1000)
-    buildFileQueueAndUploadOne()
+    // check for not yet uploaded files on startup
+    buildFileQueueAndUpload()
 })
